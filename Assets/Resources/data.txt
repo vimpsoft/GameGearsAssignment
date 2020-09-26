@@ -21,7 +21,8 @@
 		{ "id" : 0, "title" : "жизнь", "value" : 100, "icon" : "hp" },
 		{ "id" : 1, "title" : "броня", "value" : 25, "icon" : "armor" },
 		{ "id" : 2, "title" : "урон", "value" : 25, "icon" : "axe" },
-		{ "id" : 3, "title" : "вампиризм", "value" : 0, "icon" : "Meat" }
+		{ "id" : 3, "title" : "вампиризм", "value" : 0, "icon" : "Meat" },
+		{ "id" : 4, "title" : "Жизни", "value" : 1, "icon" : "heart" }
 	],
 	"buffs" : [	
 		{ "id" : 0, "title" : "Вампир", "icon" : "book", "stats" : [
@@ -39,6 +40,9 @@
 			{"statId":0,"value":200},
 			{"statId":1,"value":25},
 			{"statId":2,"value":50}
+		]},
+		{ "id" : 4, "title" : "Зобми", "icon" : "zombie", "stats" : [
+			{"statId":4,"value":1}
 		]}		
 	]
 }

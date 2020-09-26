@@ -4,4 +4,5 @@ public class StatsId
     public const int ARMOR_ID = 1;
     public const int LIFE_STEAL_ID = 3;
     public const int DAMAGE_ID = 2;
+    public const int ZOMBIE = 4;
 }

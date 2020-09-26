@@ -14,9 +14,11 @@ public class BattleModel : MonoBehaviour
         
         void attack(PlayerModel attacker, PlayerModel victim, float dmg)
         {
-            var healthLost = dmg * (1f - victim[StatsId.ARMOR_ID].value / 100f);
-            var lifeStolen = healthLost * attacker[StatsId.LIFE_STEAL_ID].value / 100f;
-            victim.AcceptHealthDelta(-healthLost);
+            var healthLostIdeally = dmg * (1f - victim[StatsId.ARMOR_ID].value / 100f);
+            var healthLostReallistically = healthLostIdeally + Mathf.Min(victim[StatsId.LIFE_ID].value - healthLostIdeally, 0);
+
+            var lifeStolen = healthLostReallistically * attacker[StatsId.LIFE_STEAL_ID].value / 100f;
+            victim.AcceptHealthDelta(-healthLostReallistically);
             attacker.AcceptHealthDelta(lifeStolen);
         }
     }

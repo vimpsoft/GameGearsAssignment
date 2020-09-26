@@ -75,6 +75,14 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
     {
         if (_stats[StatsId.LIFE_ID].value > 0)
             OnAttack?.Invoke(_stats[StatsId.DAMAGE_ID].value);
+        else if (_stats[StatsId.ZOMBIE].value > 0)
+        {
+            _stats[StatsId.ZOMBIE].value--;
+            var lifeDelta = _initialStats[StatsId.LIFE_ID].value * 0.25f;
+            _stats[StatsId.LIFE_ID].value = lifeDelta;
+            OnAttack?.Invoke(_stats[StatsId.DAMAGE_ID].value);
+            OnHealthChange?.Invoke(this[StatsId.LIFE_ID].value, _initialStats[StatsId.LIFE_ID].value, lifeDelta);
+        }
     }
 
     internal void AcceptHealthDelta(float delta)

@@ -555,7 +555,7 @@ MonoBehaviour:
   _player3DModelTransform: {fileID: 17542833}
   _healthBubblePrefab: {fileID: 2343605713250318606, guid: 75f80755889314948a403330f8b47bb2,
     type: 3}
-  _healthBubbleStartHeight: 2
+  _healthBubbleStartHeight: 3
   _healthBarView: {fileID: 1989946827}
 --- !u!1001 &502479215
 PrefabInstance:
@@ -1948,7 +1948,7 @@ MonoBehaviour:
   _player3DModelTransform: {fileID: 1554757915}
   _healthBubblePrefab: {fileID: 2343605713250318606, guid: 75f80755889314948a403330f8b47bb2,
     type: 3}
-  _healthBubbleStartHeight: 2
+  _healthBubbleStartHeight: 3
   _healthBarView: {fileID: 643110517}
 --- !u!1 &1833759499
 GameObject:

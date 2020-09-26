@@ -14,5 +14,13 @@ public class StatsAndBuffsPresenter : MonoBehaviour
     [SerializeField]
     private StatsAndBuffsView _view;
 
-    private void Start() => _playerModel.OnModelUpdate += _view.DrawStatsAndBuffs;
+    private void Start()
+    {
+        _playerModel.OnModelUpdate += _view.DrawStatsAndBuffs;
+
+        //Когда меняется значение жизни нам надо обновлять вид StatView
+        //По-нормальному надо бы в класс Stat заделать эвент изменения и подписывать его 
+        //в StatPresenter на обновление вьюхи, но раз уж я не меняю предоставленный код, то просто перестраиваем всю вьюху
+        _playerModel.OnHealthChange += (_, __, ___) => _view.DrawStatsAndBuffs(_playerModel);
+    }
 }

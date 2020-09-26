@@ -1,4 +1,6 @@
-﻿public static class Extensions
+﻿using System;
+
+public static class Extensions
 {
     public static Stat Clone(this Stat original)
     {

@@ -3,24 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Делаю интерфейсы, чтобы ограничить модифицируемость модели. Для полного счастья надо 
-/// бы сделать еще из Stat и Buff структуры, но не буду менять фреймворк.
-/// </summary>
+public delegate void HealthChangeDelegate(float currentHealth, float maxHealth, float delta); //Определяю делегат явно, потому что тут три флоата, чтоб не путались, надо назвать каждый
+
 public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
 {
+    public event HealthChangeDelegate OnHealthChange;
     public event Action<PlayerModel> OnModelUpdate;
+    public event Action<float> OnAttack;
+
+    public Stat this[int statIndex]
+    {
+        get => _stats[statIndex];
+        private set => _stats[statIndex] = value;
+    }
 
     [SerializeField]
     private GameModelValue _gameModel;
 
     [SerializeField]
     private FloatValue _chanceOfBuff;
+
     [SerializeField]
     private BoolValue _allowBuffs;
 
     private List<Buff> _buffs = new List<Buff>(); //Мы заранее не знаем сколько будет баффов и будут ли вообще
-    private Stat[] _stats; //А вот кол-во статов мы знаем заранее
+
+    //А вот кол-во статов мы знаем заранее
+    private Stat[] _stats; //Тут мы храним текущие значения
+    private Stat[] _initialStats; //А тут изначальные (потому что значения могут меняться по ходу боя и нам надо иногда знать изначальную инфу, как, например, со здоровьем)
 
     private void Start()
     {
@@ -29,10 +39,9 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
         void initialize(Stat[] stats, Buff[] buffs)
         {
             _buffs.Clear();
-            _stats = new Stat[stats.Length];
+            _initialStats = new Stat[stats.Length];
 
-            for (int i = 0; i < stats.Length; i++)
-                _stats[i] = stats[i].Clone();
+            cloneStats(stats, _initialStats);
             if (_allowBuffs.Value)
                 for (int i = 0; i < buffs.Length; i++)
                 {
@@ -40,14 +49,37 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
                     {
                         _buffs.Add(buffs[i]);
                         for (int j = 0; j < buffs[i].stats.Length; j++)
-                            _stats[buffs[i].stats[j].statId].value += buffs[i].stats[j].value;
+                            _initialStats[buffs[i].stats[j].statId].value += buffs[i].stats[j].value;
                     }
                     else
                         continue;
                 }
 
+            var initialDelta = _stats == default ? 0 : _initialStats[StatsId.LIFE_ID].value - _stats[StatsId.LIFE_ID].value;
+
+            _stats = new Stat[stats.Length];
+            cloneStats(_initialStats, _stats); //Сохраняем копию изначальных статов (нужно для некоторых статов, например, для здоровья)
+
             OnModelUpdate?.Invoke(this);
+            OnHealthChange?.Invoke(_initialStats[StatsId.LIFE_ID].value, _initialStats[StatsId.LIFE_ID].value, initialDelta);
         }
+
+        void cloneStats(Stat[] from, Stat[] to)
+        {
+            for (int i = 0; i < from.Length; i++)
+                to[i] = from[i].Clone();
+        }
+    }
+
+    public void PerformAttack() => OnAttack?.Invoke(_stats[StatsId.DAMAGE_ID].value);
+
+    internal void AcceptHealthDelta(float delta)
+    {
+        //мы получаем изменение hp, но оно может быть больше чем мы можем принять, поэтому сначала вычисляем сколько и этой дельты мы можем принять
+        var newLife = Mathf.Clamp(this[StatsId.LIFE_ID].value + delta, 0, _initialStats[StatsId.LIFE_ID].value); //Столько будет у нас жизни после применения дельты
+        var realDelta = newLife - this[StatsId.LIFE_ID].value; //Вот столько мы можем принять
+        this[StatsId.LIFE_ID].value = newLife;
+        OnHealthChange?.Invoke(this[StatsId.LIFE_ID].value, _initialStats[StatsId.LIFE_ID].value, realDelta);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

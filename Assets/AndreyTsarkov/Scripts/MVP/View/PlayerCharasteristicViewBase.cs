@@ -6,7 +6,7 @@ using UnityEngine;
 /// интерфейс и менять код классов Buff и Stat, а я не уверен, что в задании имеется в виду менять фреймворк.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class PlayerCharasteristicViewBase<T> : MonoBehaviour
+public abstract class PlayerCharasteristicViewBase<T> : MonoBehaviour
 {
     [SerializeField]
     private PlayerPanelHierarchy _playerPanelHierarchy;

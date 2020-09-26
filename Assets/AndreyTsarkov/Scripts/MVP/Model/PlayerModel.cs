@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void HealthChangeDelegate(float currentHealth, float maxHealth, float delta); //Определяю делегат явно, потому что тут три флоата, чтоб не путались, надо назвать каждый
+public delegate void HealthChangeDelegate(float currentHealth, float maxHealth, float delta); //Определяю делегат явно, потому что тут три флоата, надо чтоб не путались назвать каждый
 
 public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
 {
@@ -35,7 +35,7 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
     private void Start()
     {
         _gameModel.OnModelUpdate += model => initialize(model.stats, model.buffs);
-        
+
         void initialize(Stat[] stats, Buff[] buffs)
         {
             _buffs.Clear();
@@ -58,7 +58,7 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
             var initialDelta = _stats == default ? 0 : _initialStats[StatsId.LIFE_ID].value - _stats[StatsId.LIFE_ID].value;
 
             _stats = new Stat[stats.Length];
-            cloneStats(_initialStats, _stats); //Сохраняем копию изначальных статов (нужно для некоторых статов, например, для здоровья)
+            cloneStats(_initialStats, _stats);
 
             OnModelUpdate?.Invoke(this);
             OnHealthChange?.Invoke(_initialStats[StatsId.LIFE_ID].value, _initialStats[StatsId.LIFE_ID].value, initialDelta);
@@ -71,11 +71,15 @@ public class PlayerModel : MonoBehaviour, IEnumerable<Stat>, IEnumerable<Buff>
         }
     }
 
-    public void PerformAttack() => OnAttack?.Invoke(_stats[StatsId.DAMAGE_ID].value);
+    public void PerformAttack()
+    {
+        if (_stats[StatsId.LIFE_ID].value > 0)
+            OnAttack?.Invoke(_stats[StatsId.DAMAGE_ID].value);
+    }
 
     internal void AcceptHealthDelta(float delta)
     {
-        //мы получаем изменение hp, но оно может быть больше чем мы можем принять, поэтому сначала вычисляем сколько и этой дельты мы можем принять
+        //мы получаем изменение hp, но оно может быть больше чем мы можем принять, поэтому сначала вычисляем реальное значение дельты
         var newLife = Mathf.Clamp(this[StatsId.LIFE_ID].value + delta, 0, _initialStats[StatsId.LIFE_ID].value); //Столько будет у нас жизни после применения дельты
         var realDelta = newLife - this[StatsId.LIFE_ID].value; //Вот столько мы можем принять
         this[StatsId.LIFE_ID].value = newLife;

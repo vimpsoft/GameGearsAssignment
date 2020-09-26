@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class PlayerView : MonoBehaviour
             var healthChangedPresenter = Instantiate(_healthBubblePrefab).GetComponent<HealthChangedPresenter>();
             healthChangedPresenter.Initialize(delta);
             healthChangedPresenter.transform.position = _player3DModelTransform.position + Vector3.up * _healthBubbleStartHeight;
+
+            _hierarchy.character.SetInteger("Health", (int)currentHealth);
         }
     }
 }

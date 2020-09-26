@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = nameof(BoolValue), menuName = "GameGears/" + nameof(BoolValue), order = 0)]
-public class BoolValue : ScriptableObject
+[CreateAssetMenu(fileName = nameof(FloatValue), menuName = "GameGears/" + nameof(FloatValue), order = 0)]
+public class FloatValue : ScriptableObject
 {
-    public event Action<bool> OnUpdate;
-    public bool Value
+    public event Action<float> OnUpdate;
+    public float Value
     {
         get => _value;
         set
@@ -18,5 +18,5 @@ public class BoolValue : ScriptableObject
         }
     }
     [SerializeField]
-    private bool _value;
+    private float _value;
 }
